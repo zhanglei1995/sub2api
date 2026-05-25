@@ -12,372 +12,314 @@
     <div v-else v-html="homeContent"></div>
   </div>
 
-  <!-- Default Home Page -->
+  <!-- Default Landing Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950"
+    class="landing-page relative min-h-screen overflow-hidden"
   >
-    <!-- Background Decorations -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        class="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-primary-400/20 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary-500/15 blur-3xl"
-      ></div>
-      <div
-        class="absolute left-1/3 top-1/4 h-72 w-72 rounded-full bg-primary-300/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-primary-400/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"
-      ></div>
+      <div class="landing-grid absolute inset-0"></div>
+      <div class="landing-wash absolute inset-0"></div>
+      <div class="scan-line absolute left-0 top-0 h-px w-full"></div>
     </div>
 
     <!-- Header -->
-    <header class="relative z-20 px-6 py-4">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center">
-          <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
+    <header class="relative z-20 px-4 py-4 sm:px-6">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4">
+        <router-link to="/home" class="flex min-w-0 items-center gap-3">
+          <div class="brand-mark h-10 w-10 flex-none overflow-hidden rounded-lg p-1">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
-        </div>
+          <span class="landing-brand truncate text-sm font-semibold tracking-wide sm:text-base">{{ siteName }}</span>
+        </router-link>
 
-        <!-- Nav Actions -->
-        <div class="flex items-center gap-3">
-          <!-- Language Switcher -->
+        <div class="flex items-center gap-2 sm:gap-3">
           <LocaleSwitcher />
 
-          <!-- Doc Link -->
           <a
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="landing-icon-button"
             :title="t('home.viewDocs')"
           >
             <Icon name="book" size="md" />
           </a>
 
-          <!-- Theme Toggle -->
           <button
             @click="toggleTheme"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="landing-icon-button"
             :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
           >
             <Icon v-if="isDark" name="sun" size="md" />
             <Icon v-else name="moon" size="md" />
           </button>
 
-          <!-- Login / Dashboard Button -->
           <router-link
             v-if="isAuthenticated"
             :to="dashboardPath"
-            class="inline-flex items-center gap-1.5 rounded-full bg-gray-900 py-1 pl-1 pr-2.5 transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
+            class="dashboard-pill hidden items-center gap-1.5 rounded-full py-1 pl-1 pr-3 text-xs font-medium transition sm:inline-flex"
           >
-            <span
-              class="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-[10px] font-semibold text-white"
-            >
+            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-[10px] font-semibold text-white">
               {{ userInitial }}
             </span>
-            <span class="text-xs font-medium text-white">{{ t('home.dashboard') }}</span>
-            <svg
-              class="h-3 w-3 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
+            {{ t('home.dashboard') }}
+          </router-link>
+          <template v-else>
+            <router-link
+              to="/login"
+              class="login-link hidden rounded-full px-3 py-2 text-xs font-medium transition sm:inline-flex"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-              />
-            </svg>
-          </router-link>
-          <router-link
-            v-else
-            to="/login"
-            class="inline-flex items-center rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
-          >
-            {{ t('home.login') }}
-          </router-link>
+              {{ t('home.login') }}
+            </router-link>
+            <router-link
+              to="/register"
+              class="register-pill inline-flex rounded-full px-4 py-2 text-xs font-semibold transition"
+            >
+              {{ copy.navRegister }}
+            </router-link>
+          </template>
         </div>
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex-1 px-6 py-16">
-      <div class="mx-auto max-w-6xl">
-        <!-- Hero Section - Left/Right Layout -->
-        <div class="mb-12 flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-16">
-          <!-- Left: Text Content -->
-          <div class="flex-1 text-center lg:text-left">
-            <h1
-              class="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl lg:text-6xl"
-            >
-              {{ siteName }}
+    <main class="relative z-10">
+      <!-- Hero -->
+      <section class="px-4 pb-16 pt-12 sm:px-6 sm:pb-20 lg:pb-24 lg:pt-20">
+        <div class="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.02fr_0.98fr]">
+          <div class="max-w-3xl text-center lg:text-left">
+            <div class="hero-badge mb-5 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium backdrop-blur">
+              <Icon name="sparkles" size="sm" class="text-fuchsia-300" />
+              {{ copy.heroBadge }}
+            </div>
+
+            <h1 class="hero-title text-balance text-4xl font-black leading-[1.18] sm:text-5xl lg:text-7xl">
+              {{ copy.heroTitleA }}
+              <span class="hero-title-gradient block bg-clip-text text-transparent">
+                {{ copy.heroTitleB }}
+              </span>
             </h1>
-            <p class="mb-8 text-lg text-gray-600 dark:text-dark-300 md:text-xl">
-              {{ siteSubtitle }}
+
+            <p class="landing-muted mx-auto mt-6 max-w-2xl text-base leading-8 sm:text-lg lg:mx-0">
+              {{ copy.heroDescription }}
             </p>
 
-            <!-- CTA Button -->
-            <div>
-              <router-link
-                :to="isAuthenticated ? dashboardPath : '/login'"
-                class="btn btn-primary px-8 py-3 text-base shadow-lg shadow-primary-500/30"
-              >
-                {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
-                <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
+            <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+              <router-link :to="primaryCtaPath" class="landing-primary-button">
+                {{ isAuthenticated ? t('home.goToDashboard') : copy.primaryCta }}
+                <Icon name="arrowRight" size="md" :stroke-width="2" />
               </router-link>
+              <router-link :to="apiKeyCtaPath" class="landing-secondary-button">
+                <Icon name="key" size="md" />
+                {{ copy.apiKeyCta }}
+              </router-link>
+            </div>
+
+            <div class="mt-8 grid grid-cols-3 gap-3 text-left">
+              <div v-for="metric in copy.heroMetrics" :key="metric.label" class="metric-card rounded-lg p-3 backdrop-blur">
+                <div class="landing-strong text-xl font-bold sm:text-2xl">{{ metric.value }}</div>
+                <div class="landing-subtle mt-1 text-xs leading-5">{{ metric.label }}</div>
+              </div>
             </div>
           </div>
 
-          <!-- Right: Terminal Animation -->
-          <div class="flex flex-1 justify-center lg:justify-end">
-            <div class="terminal-container">
-              <div class="terminal-window">
-                <!-- Window header -->
-                <div class="terminal-header">
-                  <div class="terminal-buttons">
-                    <span class="btn-close"></span>
-                    <span class="btn-minimize"></span>
-                    <span class="btn-maximize"></span>
-                  </div>
-                  <span class="terminal-title">terminal</span>
+          <div class="relative mx-auto w-full max-w-xl">
+            <div class="api-visual">
+              <div class="api-visual-header">
+                <div class="flex items-center gap-2">
+                  <span class="h-2.5 w-2.5 rounded-full bg-rose-400"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-amber-300"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
                 </div>
-                <!-- Terminal content -->
-                <div class="terminal-body">
-                  <div class="code-line line-1">
-                    <span class="code-prompt">$</span>
-                    <span class="code-cmd">curl</span>
-                    <span class="code-flag">-X POST</span>
-                    <span class="code-url">/v1/messages</span>
+                <span>{{ copy.visualTitle }}</span>
+              </div>
+              <div class="api-route-map">
+                <div class="route-node route-node-user">
+                  <Icon name="terminal" size="lg" />
+                  <span>{{ copy.visualClient }}</span>
+                </div>
+                <div class="route-line"></div>
+                <div class="route-node route-node-gateway">
+                  <Icon name="server" size="lg" />
+                  <span>{{ copy.visualGateway }}</span>
+                </div>
+                <div class="route-line"></div>
+                <div class="grid gap-2">
+                  <div v-for="provider in copy.visualProviders" :key="provider" class="provider-chip">
+                    <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
+                    {{ provider }}
                   </div>
-                  <div class="code-line line-2">
-                    <span class="code-comment"># Routing to upstream...</span>
-                  </div>
-                  <div class="code-line line-3">
-                    <span class="code-success">200 OK</span>
-                    <span class="code-response">{ "content": "Hello!" }</span>
-                  </div>
-                  <div class="code-line line-4">
-                    <span class="code-prompt">$</span>
-                    <span class="cursor"></span>
-                  </div>
+                </div>
+              </div>
+              <div class="code-panel">
+                <div class="code-panel-header flex items-center justify-between px-4 py-3 text-xs">
+                  <span>OpenAI compatible</span>
+                  <span class="text-emerald-300">200 OK</span>
+                </div>
+                <pre><code>const openai = new OpenAI({
+  apiKey: "{{ maskedApiKey }}",
+  baseURL: "{{ apiBaseUrl }}/v1"
+})</code></pre>
+              </div>
+              <div class="api-activity">
+                <div v-for="item in copy.visualActivity" :key="item.label" class="activity-row">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.value }}</strong>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <!-- Feature Tags - Centered -->
-        <div class="mb-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
-          <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-          >
-            <Icon name="swap" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.subscriptionToApi')
-            }}</span>
+      <!-- Advantages -->
+      <section class="landing-band px-4 py-16 sm:px-6">
+        <div class="mx-auto max-w-7xl">
+          <div class="section-heading">
+            <p>{{ copy.advantagesEyebrow }}</p>
+            <h2>{{ copy.advantagesTitle }}</h2>
           </div>
-          <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-          >
-            <Icon name="shield" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.stickySession')
-            }}</span>
-          </div>
-          <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-          >
-            <Icon name="chart" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.realtimeBilling')
-            }}</span>
+          <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <article v-for="advantage in copy.advantages" :key="advantage.title" class="landing-card">
+              <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-lg" :class="advantage.iconClass">
+                <Icon :name="advantage.icon" size="lg" />
+              </div>
+              <h3 class="landing-strong text-lg font-semibold">{{ advantage.title }}</h3>
+              <p class="landing-muted mt-3 text-sm leading-7">{{ advantage.description }}</p>
+            </article>
           </div>
         </div>
+      </section>
 
-        <!-- Features Grid -->
-        <div class="mb-12 grid gap-6 md:grid-cols-3">
-          <!-- Feature 1: Unified Gateway -->
-          <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-110"
-            >
-              <Icon name="server" size="lg" class="text-white" />
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.unifiedGateway') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.unifiedGatewayDesc') }}
-            </p>
+      <!-- Scenarios -->
+      <section class="px-4 py-16 sm:px-6 lg:py-20">
+        <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <div class="section-heading text-left">
+            <p>{{ copy.scenariosEyebrow }}</p>
+            <h2>{{ copy.scenariosTitle }}</h2>
+            <span>{{ copy.scenariosDescription }}</span>
           </div>
-
-          <!-- Feature 2: Account Pool -->
-          <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30 transition-transform group-hover:scale-110"
-            >
-              <svg
-                class="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-                />
-              </svg>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div v-for="scenario in copy.scenarios" :key="scenario.title" class="scenario-row">
+              <Icon :name="scenario.icon" size="md" class="text-fuchsia-300" />
+              <div>
+                <h3 class="landing-strong font-semibold">{{ scenario.title }}</h3>
+                <p class="landing-muted mt-1 text-sm leading-6">{{ scenario.description }}</p>
+              </div>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.multiAccount') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.multiAccountDesc') }}
-            </p>
-          </div>
-
-          <!-- Feature 3: Billing & Quota -->
-          <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/30 transition-transform group-hover:scale-110"
-            >
-              <svg
-                class="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
-                />
-              </svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.balanceQuota') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.balanceQuotaDesc') }}
-            </p>
           </div>
         </div>
+      </section>
 
-        <!-- Supported Providers -->
-        <div class="mb-8 text-center">
-          <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
-            {{ t('home.providers.title') }}
-          </h2>
-          <p class="text-sm text-gray-600 dark:text-dark-400">
-            {{ t('home.providers.description') }}
-          </p>
-        </div>
-
-        <div class="mb-16 flex flex-wrap items-center justify-center gap-4">
-          <!-- Claude - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500"
-            >
-              <span class="text-xs font-bold text-white">C</span>
+      <!-- Integration -->
+      <section class="integration-band px-4 py-16 sm:px-6 lg:py-20">
+        <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <div class="section-heading text-left">
+              <p>{{ copy.integrationEyebrow }}</p>
+              <h2>{{ copy.integrationTitle }}</h2>
+              <span>{{ copy.integrationDescription }}</span>
             </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.claude') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
+            <div class="mt-8 grid gap-3">
+              <div v-for="step in copy.integrationSteps" :key="step.title" class="step-row flex gap-4 rounded-lg p-4">
+                <div class="step-index flex h-8 w-8 flex-none items-center justify-center rounded-lg text-sm font-bold">
+                  {{ step.index }}
+                </div>
+                <div>
+                  <h3 class="landing-strong font-semibold">{{ step.title }}</h3>
+                  <p class="landing-muted mt-1 text-sm leading-6">{{ step.description }}</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <!-- GPT - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600"
-            >
-              <span class="text-xs font-bold text-white">G</span>
+          <div class="code-showcase">
+            <div class="code-showcase-header flex items-center justify-between px-4 py-3">
+              <div class="landing-strong flex items-center gap-2 text-sm font-medium">
+                <Icon name="terminal" size="sm" />
+                {{ copy.codeTitle }}
+              </div>
+              <span class="rounded-full bg-emerald-400/10 px-2 py-1 text-xs text-emerald-300">{{ copy.compatible }}</span>
             </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">GPT</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Gemini - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600"
-            >
-              <span class="text-xs font-bold text-white">G</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.gemini') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Antigravity - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-pink-600"
-            >
-              <span class="text-xs font-bold text-white">A</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.antigravity') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- More - Coming Soon -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-gray-200/50 bg-white/40 px-5 py-3 opacity-60 backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/40"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600"
-            >
-              <span class="text-xs font-bold text-white">+</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.more') }}</span>
-            <span
-              class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-400"
-              >{{ t('home.providers.soon') }}</span
-            >
+            <pre><code>curl {{ apiBaseUrl }}/v1/chat/completions \
+  -H "Authorization: Bearer {{ maskedApiKey }}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      { "role": "user", "content": "Hello API Gateway" }
+    ]
+  }'</code></pre>
           </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Pricing -->
+      <section class="px-4 py-16 sm:px-6 lg:py-20">
+        <div class="mx-auto max-w-7xl">
+          <div class="section-heading">
+            <p>{{ copy.pricingEyebrow }}</p>
+            <h2>{{ copy.pricingTitle }}</h2>
+            <span>{{ copy.pricingDescription }}</span>
+          </div>
+          <div class="mt-10 grid gap-4 lg:grid-cols-2">
+            <article v-for="plan in copy.plans" :key="plan.name" class="pricing-card" :class="{ 'pricing-card-featured': plan.featured }">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div class="flex items-center gap-3">
+                    <h3 class="landing-strong text-2xl font-bold">{{ plan.name }}</h3>
+                    <span v-if="plan.badge" class="plan-badge rounded-full px-3 py-1 text-xs font-semibold">{{ plan.badge }}</span>
+                  </div>
+                  <p class="landing-muted mt-3 text-sm leading-7">{{ plan.description }}</p>
+                </div>
+                <div class="text-left sm:text-right">
+                  <div class="landing-strong text-3xl font-black">{{ plan.price }}</div>
+                  <div class="landing-subtle text-xs">{{ plan.unit }}</div>
+                </div>
+              </div>
+              <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                <div v-for="feature in plan.features" :key="feature" class="landing-body flex items-center gap-2 text-sm">
+                  <Icon name="checkCircle" size="sm" class="text-emerald-300" />
+                  {{ feature }}
+                </div>
+              </div>
+              <router-link :to="purchaseCtaPath" class="plan-button mt-7 inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold transition">
+                {{ plan.cta }}
+                <Icon name="arrowRight" size="sm" :stroke-width="2" />
+              </router-link>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ + Final CTA -->
+      <section class="faq-section px-4 py-16 sm:px-6 lg:py-20">
+        <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <div class="section-heading text-left">
+              <p>{{ copy.faqEyebrow }}</p>
+              <h2>{{ copy.faqTitle }}</h2>
+              <span>{{ copy.faqDescription }}</span>
+            </div>
+            <router-link :to="primaryCtaPath" class="landing-primary-button mt-8">
+              {{ isAuthenticated ? t('home.goToDashboard') : copy.finalCta }}
+              <Icon name="arrowRight" size="md" :stroke-width="2" />
+            </router-link>
+          </div>
+          <div class="grid gap-3">
+            <details v-for="faq in copy.faqs" :key="faq.question" class="faq-item">
+              <summary>{{ faq.question }}</summary>
+              <p>{{ faq.answer }}</p>
+            </details>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-10 border-t border-gray-200/50 px-6 py-8 dark:border-dark-800/50">
-      <div
-        class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
-      >
-        <p class="text-sm text-gray-500 dark:text-dark-400">
+    <footer class="landing-footer relative z-10 px-4 py-8 sm:px-6">
+      <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+        <p class="footer-text text-sm">
           &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
         </p>
         <div class="flex items-center gap-4">
@@ -386,7 +328,7 @@
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-white"
+            class="footer-link text-sm transition"
           >
             {{ t('home.docs') }}
           </a>
@@ -394,10 +336,16 @@
             :href="githubUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-white"
+            class="footer-link text-sm transition"
           >
             GitHub
           </a>
+          <router-link v-if="!isAuthenticated" to="/login" class="footer-link text-sm transition">
+            {{ t('home.login') }}
+          </router-link>
+          <router-link v-if="!isAuthenticated" to="/register" class="footer-link text-sm transition">
+            {{ copy.navRegister }}
+          </router-link>
         </div>
       </div>
     </footer>
@@ -411,7 +359,22 @@ import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 
-const { t } = useI18n()
+type IconName = InstanceType<typeof Icon>['$props']['name']
+
+interface AdvantageItem {
+  title: string
+  description: string
+  icon: IconName
+  iconClass: string
+}
+
+interface ScenarioItem {
+  title: string
+  description: string
+  icon: IconName
+}
+
+const { t, locale } = useI18n()
 
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -445,6 +408,238 @@ const userInitial = computed(() => {
   return user.email.charAt(0).toUpperCase()
 })
 
+const primaryCtaPath = computed(() => isAuthenticated.value ? dashboardPath.value : '/register')
+const apiKeyCtaPath = computed(() => isAuthenticated.value ? '/keys' : '/register')
+const purchaseCtaPath = computed(() => isAuthenticated.value ? '/purchase' : '/register')
+const apiBaseUrl = computed(() => {
+  if (typeof window === 'undefined') return 'https://api.example.com'
+  return window.location.origin
+})
+const maskedApiKey = 'sk-...token-flow'
+
+const copy = computed(() => {
+  const isZh = String(locale.value).toLowerCase().startsWith('zh')
+  if (!isZh) {
+    return {
+      navRegister: 'Register',
+      heroBadge: `${siteName.value} · ${siteSubtitle.value}`,
+      heroTitleA: 'Pay as you go.',
+      heroTitleB: 'Connect your AI coding tools.',
+      heroDescription:
+        'Stable API access for Codex, Claude Code, openclaw, Hermes, and other AI tools. No monthly lock-in, no time limits, billed by actual usage so developers and teams can use AI more freely.',
+      primaryCta: 'Get API Key',
+      apiKeyCta: 'View setup guide',
+      heroMetrics: [
+        { value: 'Usage', label: 'Pay only for what you use' },
+        { value: 'No limit', label: 'Use it whenever you need' },
+        { value: 'AI Tools', label: 'Codex and more' }
+      ],
+      visualTitle: 'AI tool API access',
+      visualClient: 'AI tools',
+      visualGateway: 'Unified API access',
+      visualProviders: ['Codex', 'Claude Code', 'openclaw', 'Hermes'],
+      visualActivity: [
+        { label: 'Billing', value: 'Usage' },
+        { label: 'Access', value: 'No time limit' },
+        { label: 'Setup', value: 'Ready to use' }
+      ],
+      advantagesEyebrow: 'Why it works',
+      advantagesTitle: 'Flexible API access for the AI tools you already use',
+      advantages: [
+        {
+          title: 'Pay as you go',
+          description: 'No monthly subscription lock-in. Billing follows actual API usage, making both light testing and long-term use more flexible.',
+          icon: 'dollar' as IconName,
+          iconClass: 'advantage-icon advantage-icon-fuchsia'
+        },
+        {
+          title: 'No time limits',
+          description: 'Open your tools and call the API whenever you need. It fits ongoing development, agents, and automation tasks.',
+          icon: 'clock' as IconName,
+          iconClass: 'advantage-icon advantage-icon-emerald'
+        },
+        {
+          title: 'Use it freely',
+          description: 'Register, get an API Key, and connect common AI tools with less setup friction and waiting.',
+          icon: 'bolt' as IconName,
+          iconClass: 'advantage-icon advantage-icon-cyan'
+        },
+        {
+          title: 'Mainstream tool support',
+          description: 'Built for Codex, Claude Code, openclaw, Hermes, and similar tool workflows with unified access and usage management.',
+          icon: 'shield' as IconName,
+          iconClass: 'advantage-icon advantage-icon-amber'
+        }
+      ] satisfies AdvantageItem[],
+      scenariosEyebrow: 'Use cases',
+      scenariosTitle: 'Built around modern AI coding workflows',
+      scenariosDescription: 'Use one API Key across mainstream AI tools, personal coding sessions, and team automation workloads.',
+      scenarios: [
+        { title: 'Codex workflows', description: 'Give Codex a stable API Key for coding, refactoring, and command-line development tasks.', icon: 'cpu' as IconName },
+        { title: 'Claude Code', description: 'Connect Claude Code-style workflows with flexible usage-based API access.', icon: 'chat' as IconName },
+        { title: 'openclaw', description: 'Use openclaw with a unified entry point for everyday AI-assisted development.', icon: 'sync' as IconName },
+        { title: 'Hermes', description: 'Power Hermes workflows without committing to fixed monthly usage windows.', icon: 'document' as IconName },
+        { title: 'Personal AI coding', description: 'Pay by usage for experiments, side projects, and daily coding sessions.', icon: 'globe' as IconName },
+        { title: 'Team automation', description: 'Support agents and recurring team tasks with unified key and usage management.', icon: 'users' as IconName }
+      ] satisfies ScenarioItem[],
+      integrationEyebrow: 'Integration',
+      integrationTitle: 'Get an API Key and connect your AI tool',
+      integrationDescription: 'Use the API address and key required by your tool. The platform handles access, usage records, and billing behind the scenes.',
+      integrationSteps: [
+        { index: '01', title: 'Register account', description: 'Create an account and enter the console.' },
+        { index: '02', title: 'Generate API Key', description: 'Create a key for Codex, Claude Code, openclaw, Hermes, or your team.' },
+        { index: '03', title: 'Configure your tool', description: 'Set the API address and key in the tool, then start using it on demand.' }
+      ],
+      codeTitle: 'Request example',
+      compatible: 'OpenAI SDK compatible',
+      pricingEyebrow: 'Pricing',
+      pricingTitle: 'Usage-based access for different workloads',
+      pricingDescription: 'Start with occasional coding sessions, then scale to frequent tool usage and team automation as needed.',
+      plans: [
+        {
+          name: 'Pay as you go',
+          badge: '',
+          description: 'For personal tools, experiments, and flexible AI coding without a monthly commitment.',
+          price: 'Metered',
+          unit: 'pay only for actual usage',
+          features: ['Usage-based billing', 'No time limits', 'AI tool access', 'Usage dashboard'],
+          cta: 'Start metered usage',
+          featured: false
+        },
+        {
+          name: 'High-frequency use',
+          badge: 'Recommended',
+          description: 'For ongoing development, team tools, and automation tasks that use AI throughout the day.',
+          price: 'Flexible',
+          unit: 'for sustained AI workflows',
+          features: ['Frequent tool usage', 'Team-friendly access', 'Automation workflows', 'Unified usage management'],
+          cta: 'Use it frequently',
+          featured: true
+        }
+      ],
+      faqEyebrow: 'FAQ',
+      faqTitle: 'Common questions before you connect',
+      faqDescription: 'The short version: no monthly lock-in, no time limit, and mainstream AI tools can connect with an API Key.',
+      finalCta: 'Get API Key now',
+      faqs: [
+        { question: 'Do I need a monthly subscription?', answer: 'No. Billing is based on actual usage, so you only pay for what you use.' },
+        { question: 'Is usage limited by time?', answer: 'No. It is not restricted by session duration. Use it whenever you need it.' },
+        { question: 'Which AI tools are supported?', answer: 'It supports access scenarios for Codex, Claude Code, openclaw, Hermes, and other mainstream AI tools.' },
+        { question: 'How do I start?', answer: 'Register, get an API Key, then configure the API address and key required by your tool.' }
+      ]
+    }
+  }
+
+  return {
+    navRegister: '注册',
+    heroBadge: `${siteName.value} · ${siteSubtitle.value}`,
+    heroTitleA: '按Plus用量定价',
+    heroTitleB: '享受 Vibe Coding',
+    heroDescription:
+      '为 Codex、Claude Code、openclaw、Hermes 等 AI 工具提供稳定 API 接入。无需包月，不限时间，按实际用量计费，想用就用，让个人开发者和团队都能更自由地使用 AI。',
+    primaryCta: '立即获取 API Key',
+    apiKeyCta: '查看接入方式',
+    heroMetrics: [
+      { value: '按量计费', label: '用多少算多少' },
+      { value: '不限时间', label: '想用就用' },
+      { value: 'AI 工具', label: 'Codex 等主流工具' }
+    ],
+    visualTitle: 'AI 工具 API 接入',
+    visualClient: 'AI 工具',
+    visualGateway: '统一 API 接入',
+    visualProviders: ['Codex', 'Claude Code', 'openclaw', 'Hermes'],
+    visualActivity: [
+      { label: '计费', value: '按量' },
+      { label: '使用', value: '不限时' },
+      { label: '接入', value: '即开即用' }
+    ],
+    advantagesEyebrow: '核心优势',
+    advantagesTitle: '为你常用的 AI 工具提供更自由的 API 接入',
+    advantages: [
+      {
+        title: '按量计费',
+        description: '无需包月绑定，按实际调用量计费，轻量试用和长期使用都更灵活。',
+        icon: 'dollar' as IconName,
+        iconClass: 'advantage-icon advantage-icon-fuchsia'
+      },
+      {
+        title: '不限时间使用',
+        description: '不按会话时长限制，随时打开工具、随时调用 API，适合持续开发和自动化任务。',
+        icon: 'clock' as IconName,
+        iconClass: 'advantage-icon advantage-icon-emerald'
+      },
+      {
+        title: '想用就用',
+        description: '注册后获取 API Key，即可接入常见 AI 工具，减少复杂配置和等待成本。',
+        icon: 'bolt' as IconName,
+        iconClass: 'advantage-icon advantage-icon-cyan'
+      },
+      {
+        title: '主流 AI 工具支持',
+        description: '支持 Codex、Claude Code、openclaw、Hermes 等工具场景，统一管理接入和用量。',
+        icon: 'shield' as IconName,
+        iconClass: 'advantage-icon advantage-icon-amber'
+      }
+    ] satisfies AdvantageItem[],
+    scenariosEyebrow: '使用场景',
+    scenariosTitle: '围绕主流 AI 编程工具的日常工作流',
+    scenariosDescription: '一把 API Key 覆盖 Codex、Claude Code、openclaw、Hermes，以及个人开发和团队自动化场景。',
+    scenarios: [
+      { title: 'Codex 开发工作流', description: '为 Codex 提供稳定 API Key，覆盖代码生成、重构和命令行开发任务。', icon: 'cpu' as IconName },
+      { title: 'Claude Code', description: '用按量计费的 API 接入方式支持 Claude Code 类开发工作流。', icon: 'chat' as IconName },
+      { title: 'openclaw', description: '为 openclaw 提供统一入口，适合日常 AI 辅助开发。', icon: 'sync' as IconName },
+      { title: 'Hermes', description: '让 Hermes 工作流不再受固定包月和时间窗口限制。', icon: 'document' as IconName },
+      { title: '个人 AI 编程', description: '适合实验项目、个人工具和日常编码，用多少算多少。', icon: 'globe' as IconName },
+      { title: '团队自动化任务', description: '为 Agent、定时任务和团队流程提供统一密钥与用量管理。', icon: 'users' as IconName }
+    ] satisfies ScenarioItem[],
+    integrationEyebrow: '接入示例',
+    integrationTitle: '获取 API Key，接入你的 AI 工具',
+    integrationDescription: '按工具要求配置 API 地址和密钥，平台负责接入、用量统计和按量计费。',
+    integrationSteps: [
+      { index: '01', title: '注册账户', description: '创建账号并进入控制台。' },
+      { index: '02', title: '生成 API Key', description: '为 Codex、Claude Code、openclaw、Hermes 或团队成员创建访问密钥。' },
+      { index: '03', title: '配置工具', description: '在工具中填入 API 地址和密钥，即可按需使用。' }
+    ],
+    codeTitle: '请求示例',
+    compatible: '兼容 OpenAI SDK',
+    pricingEyebrow: '价格方案',
+    pricingTitle: '按实际使用量付费，轻量和高频都灵活',
+    pricingDescription: '偶尔使用时无需包月，高频开发和团队自动化也可以按实际调用量持续使用。',
+    plans: [
+      {
+        name: '按量使用',
+        badge: '',
+        description: '适合个人工具、测试验证和轻量 AI 编程调用，无需固定包月。',
+        price: '按量',
+        unit: '用多少算多少',
+        features: ['按实际用量计费', '不限时间使用', '支持 AI 工具接入', '用量看板'],
+        cta: '开始按量使用',
+        featured: false
+      },
+      {
+        name: '高频使用',
+        badge: '推荐',
+        description: '适合持续开发、团队工具和自动化任务，让 AI 工具全天候按需调用。',
+        price: '灵活',
+        unit: '适合持续 AI 工作流',
+        features: ['高频工具使用', '团队友好接入', '自动化任务支持', '统一用量管理'],
+        cta: '开启高频使用',
+        featured: true
+      }
+    ],
+    faqEyebrow: 'FAQ',
+    faqTitle: '接入前常见问题',
+    faqDescription: '核心答案很简单：无需包月、不限时间，主流 AI 工具可通过 API Key 接入。',
+    finalCta: '立即获取 API Key',
+    faqs: [
+      { question: '是否需要包月？', answer: '不需要，按实际用量计费。' },
+      { question: 'Token怎么定价？', answer: '按各家Plus最大用量折合Token定价' },
+      { question: '支持哪些 AI 工具？', answer: '支持 Codex、Claude Code、openclaw、Hermes 等主流 AI 工具接入场景。' },
+      { question: '如何开始使用？', answer: '注册后获取 API Key，并按工具要求配置 API 地址和密钥。' }
+    ]
+  }
+})
+
 // Current year for footer
 const currentYear = computed(() => new Date().getFullYear())
 
@@ -458,10 +653,7 @@ function toggleTheme() {
 // Initialize theme
 function initTheme() {
   const savedTheme = localStorage.getItem('theme')
-  if (
-    savedTheme === 'dark' ||
-    (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-  ) {
+  if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     isDark.value = true
     document.documentElement.classList.add('dark')
   }
@@ -481,164 +673,863 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Terminal Container */
-.terminal-container {
-  position: relative;
-  display: inline-block;
+.landing-page {
+  letter-spacing: 0;
+  color: #111827;
+  background:
+    radial-gradient(circle at top left, rgba(217, 70, 239, 0.18), transparent 32rem),
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.16), transparent 30rem),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 42%, #eef2ff 100%);
 }
 
-/* Terminal Window */
-.terminal-window {
-  width: 420px;
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border-radius: 14px;
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
-  transition: transform 0.3s ease;
+html.dark .landing-page {
+  color: #f8fafc;
+  background: #0b0b0f;
 }
 
-.terminal-window:hover {
-  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-4px);
+.landing-grid {
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 70, 239, 0.06) 1px, transparent 1px);
+  background-size: 68px 68px;
+  mask-image: linear-gradient(to bottom, black 8%, transparent 74%);
 }
 
-/* Terminal Header */
-.terminal-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: rgba(30, 41, 59, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+html.dark .landing-page .landing-grid {
+  background-image:
+    linear-gradient(rgba(139, 92, 246, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 70, 239, 0.06) 1px, transparent 1px);
 }
 
-.terminal-buttons {
-  display: flex;
-  gap: 8px;
+.landing-wash {
+  background:
+    linear-gradient(110deg, rgba(139, 92, 246, 0.1), transparent 34%, rgba(217, 70, 239, 0.08) 68%, transparent),
+    radial-gradient(circle at 48% 4%, rgba(255, 255, 255, 0.92), transparent 28rem);
 }
 
-.terminal-buttons span {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+html.dark .landing-page .landing-wash {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.2), transparent 38%),
+    linear-gradient(135deg, rgba(217, 70, 239, 0.08), transparent 42%, rgba(20, 184, 166, 0.08));
 }
 
-.btn-close {
-  background: #ef4444;
-}
-.btn-minimize {
-  background: #eab308;
-}
-.btn-maximize {
-  background: #22c55e;
+.scan-line {
+  background: linear-gradient(90deg, transparent, rgba(217, 70, 239, 0.45), transparent);
 }
 
-.terminal-title {
-  flex: 1;
-  text-align: center;
-  font-size: 12px;
-  font-family: ui-monospace, monospace;
+html.dark .landing-page .scan-line {
+  background: linear-gradient(90deg, transparent, rgba(217, 70, 239, 0.7), transparent);
+}
+
+.brand-mark {
+  border: 1px solid rgba(221, 214, 254, 0.95);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 14px 34px rgba(99, 102, 241, 0.14);
+}
+
+html.dark .landing-page .brand-mark {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 24px rgba(217, 70, 239, 0.28);
+}
+
+.landing-brand,
+.hero-title,
+.landing-strong {
+  color: #111827;
+}
+
+.hero-title {
+  line-height: 1.3 !important;
+}
+
+html.dark .landing-page .landing-brand,
+html.dark .landing-page .hero-title,
+html.dark .landing-page .landing-strong {
+  color: #ffffff;
+}
+
+.hero-title-gradient {
+  background-image: linear-gradient(90deg, #8b5cf6, #d946ef, #6366f1);
+}
+
+html.dark .landing-page .hero-title-gradient {
+  background-image: linear-gradient(90deg, #f0abfc, #c4b5fd, #a5f3fc);
+}
+
+.landing-body {
+  color: #334155;
+}
+
+.landing-muted {
   color: #64748b;
-  margin-right: 52px;
 }
 
-/* Terminal Body */
-.terminal-body {
-  padding: 20px 24px;
-  font-family: ui-monospace, 'Fira Code', monospace;
-  font-size: 14px;
-  line-height: 2;
+.landing-subtle {
+  color: #64748b;
 }
 
-.code-line {
+html.dark .landing-page .landing-body {
+  color: #cbd5e1;
+}
+
+html.dark .landing-page .landing-muted {
+  color: #94a3b8;
+}
+
+html.dark .landing-page .landing-subtle {
+  color: #94a3b8;
+}
+
+.hero-badge {
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 16px 42px rgba(99, 102, 241, 0.12);
+}
+
+html.dark .landing-page .hero-badge {
+  color: #fae8ff;
+  border-color: rgba(240, 171, 252, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 28px rgba(217, 70, 239, 0.18);
+}
+
+.metric-card {
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.07);
+}
+
+html.dark .landing-page .metric-card {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}
+
+.advantage-icon {
+  box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.54);
+}
+
+.advantage-icon-fuchsia {
+  color: #d946ef;
+  background: rgba(217, 70, 239, 0.11);
+}
+
+.advantage-icon-emerald {
+  color: #059669;
+  background: rgba(16, 185, 129, 0.11);
+}
+
+.advantage-icon-cyan {
+  color: #0891b2;
+  background: rgba(6, 182, 212, 0.11);
+}
+
+.advantage-icon-amber {
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.13);
+}
+
+html.dark .landing-page .advantage-icon {
+  box-shadow: none;
+}
+
+html.dark .landing-page .advantage-icon-fuchsia {
+  color: #f5d0fe;
+  background: rgba(217, 70, 239, 0.15);
+}
+
+html.dark .landing-page .advantage-icon-emerald {
+  color: #a7f3d0;
+  background: rgba(52, 211, 153, 0.15);
+}
+
+html.dark .landing-page .advantage-icon-cyan {
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.15);
+}
+
+html.dark .landing-page .advantage-icon-amber {
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.15);
+}
+
+.landing-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.landing-icon-button:hover {
+  color: #8b5cf6;
+  background: #ffffff;
+  border-color: #ddd6fe;
+}
+
+html.dark .landing-page .landing-icon-button {
+  color: rgb(203 213 225);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+html.dark .landing-page .landing-icon-button:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(217, 70, 239, 0.35);
+}
+
+.login-link {
+  color: #475569;
+}
+
+.login-link:hover {
+  color: #8b5cf6;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+html.dark .landing-page .login-link {
+  color: #cbd5e1;
+}
+
+html.dark .landing-page .login-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.register-pill {
+  color: white;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.28);
+}
+
+.register-pill:hover {
+  box-shadow: 0 14px 36px rgba(217, 70, 239, 0.28);
+}
+
+html.dark .landing-page .register-pill {
+  color: #0b0b0f;
+  background: white;
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.18);
+}
+
+html.dark .landing-page .register-pill:hover {
+  background: #fae8ff;
+}
+
+.dashboard-pill {
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.dashboard-pill:hover {
+  color: #8b5cf6;
+  border-color: #ddd6fe;
+  background: #ffffff;
+}
+
+html.dark .landing-page .dashboard-pill {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+html.dark .landing-page .dashboard-pill:hover {
+  border-color: rgba(240, 171, 252, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.landing-primary-button,
+.landing-secondary-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.landing-primary-button {
+  color: white;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.28);
+}
+
+.landing-primary-button:hover,
+.landing-secondary-button:hover {
+  transform: translateY(-1px);
+}
+
+.landing-primary-button:hover {
+  box-shadow: 0 18px 46px rgba(217, 70, 239, 0.3);
+}
+
+.landing-secondary-button {
+  color: #8b5cf6;
+  background: #ffffff;
+  border: 1px solid #ddd6fe;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.08);
+}
+
+.landing-secondary-button:hover {
+  background: white;
+  border-color: rgba(217, 70, 239, 0.42);
+  box-shadow: 0 16px 38px rgba(139, 92, 246, 0.14);
+}
+
+html.dark .landing-page .landing-primary-button {
+  box-shadow: 0 0 34px rgba(217, 70, 239, 0.38);
+}
+
+html.dark .landing-page .landing-primary-button:hover {
+  box-shadow: 0 0 44px rgba(217, 70, 239, 0.5);
+}
+
+html.dark .landing-page .landing-secondary-button {
+  color: rgb(248 250 252);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: none;
+}
+
+html.dark .landing-page .landing-secondary-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(103, 232, 249, 0.34);
+}
+
+.api-visual,
+.code-showcase,
+.landing-card,
+.pricing-card,
+.faq-item,
+.scenario-row {
+  border: 1px solid #e5e7eb;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84)),
+    rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+}
+
+html.dark .landing-page .api-visual,
+html.dark .landing-page .code-showcase,
+html.dark .landing-page .landing-card,
+html.dark .landing-page .pricing-card,
+html.dark .landing-page .faq-item,
+html.dark .landing-page .scenario-row {
+  border-color: rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.035)),
+    rgba(11, 11, 15, 0.68);
+  box-shadow: none;
+}
+
+.api-visual {
+  overflow: hidden;
+  border-radius: 1.5rem;
+  box-shadow:
+    0 28px 80px rgba(15, 23, 42, 0.12),
+    0 0 64px rgba(139, 92, 246, 0.16);
+}
+
+html.dark .landing-page .api-visual {
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.45),
+    0 0 48px rgba(139, 92, 246, 0.24);
+}
+
+.api-visual-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  opacity: 0;
-  animation: line-appear 0.5s ease forwards;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.9rem 1rem;
+  color: #64748b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
 }
 
-.line-1 {
-  animation-delay: 0.3s;
-}
-.line-2 {
-  animation-delay: 1s;
-}
-.line-3 {
-  animation-delay: 1.8s;
-}
-.line-4 {
-  animation-delay: 2.5s;
+html.dark .landing-page .api-visual-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  color: rgb(148 163 184);
 }
 
-@keyframes line-appear {
-  from {
+.api-route-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2rem minmax(0, 1fr) 2rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+.route-node {
+  display: grid;
+  min-height: 7.5rem;
+  place-items: center;
+  gap: 0.65rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.86);
+  text-align: center;
+  color: #182033;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.route-node-user {
+  color: #6366f1;
+  box-shadow: inset 0 0 30px rgba(99, 102, 241, 0.08);
+}
+
+.route-node-gateway {
+  color: #d946ef;
+  box-shadow: inset 0 0 34px rgba(217, 70, 239, 0.1);
+}
+
+html.dark .landing-page .route-node {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.055);
+  color: white;
+}
+
+html.dark .landing-page .route-node-user {
+  color: rgb(103 232 249);
+}
+
+html.dark .landing-page .route-node-gateway {
+  color: rgb(240 171 252);
+  box-shadow: inset 0 0 28px rgba(217, 70, 239, 0.12);
+}
+
+.route-line {
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(217, 70, 239, 0.9), transparent);
+  position: relative;
+}
+
+.route-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, white, transparent);
+  animation: route-pulse 2.2s linear infinite;
+}
+
+.provider-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.15rem;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.45rem 0.65rem;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+html.dark .landing-page .provider-chip {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgb(226 232 240);
+}
+
+.code-panel,
+.code-showcase {
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(49, 46, 129, 0.94)),
+    #0f172a;
+}
+
+.code-panel-header,
+.code-showcase-header {
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.code-panel {
+  margin: 0 1.25rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.code-panel pre,
+.code-showcase pre {
+  margin: 0;
+  overflow-x: auto;
+  padding: 1rem;
+  color: rgb(226 232 240);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.8;
+}
+
+.api-activity {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid #e5e7eb;
+}
+
+.activity-row {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem;
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.activity-row + .activity-row {
+  border-left: 1px solid #e5e7eb;
+}
+
+.activity-row strong {
+  color: #111827;
+  font-size: 1rem;
+}
+
+html.dark .landing-page .api-activity {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark .landing-page .activity-row {
+  color: rgb(148 163 184);
+}
+
+html.dark .landing-page .activity-row + .activity-row {
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark .landing-page .activity-row strong {
+  color: white;
+}
+
+.section-heading {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 46rem;
+  text-align: center;
+}
+
+.section-heading.text-left {
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
+}
+
+.section-heading p {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+html.dark .landing-page .section-heading p {
+  color: rgb(240 171 252);
+}
+
+.section-heading h2 {
+  margin-top: 0.75rem;
+  color: #111827;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 900;
+  line-height: 1.12;
+}
+
+html.dark .landing-page .section-heading h2 {
+  color: white;
+}
+
+.section-heading span {
+  display: block;
+  margin-top: 1rem;
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+html.dark .landing-page .section-heading span {
+  color: rgb(148 163 184);
+}
+
+.landing-card,
+.scenario-row,
+.pricing-card {
+  border-radius: 1.5rem;
+}
+
+.landing-card {
+  padding: 1.25rem;
+}
+
+.landing-card:hover,
+.scenario-row:hover,
+.pricing-card:hover {
+  border-color: #ddd6fe;
+  box-shadow: 0 24px 70px rgba(139, 92, 246, 0.13);
+}
+
+html.dark .landing-page .landing-card:hover,
+html.dark .landing-page .scenario-row:hover,
+html.dark .landing-page .pricing-card:hover {
+  border-color: rgba(217, 70, 239, 0.35);
+  box-shadow: none;
+}
+
+.scenario-row {
+  display: flex;
+  min-height: 7.25rem;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.code-showcase {
+  border-radius: 1.5rem;
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.18),
+    0 0 52px rgba(139, 92, 246, 0.14);
+}
+
+.landing-band {
+  border-top: 1px solid rgba(229, 231, 235, 0.86);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.86);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(238, 242, 255, 0.62)),
+    rgba(255, 255, 255, 0.5);
+}
+
+html.dark .landing-page .landing-band {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.integration-band {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(248, 250, 252, 0));
+}
+
+html.dark .landing-page .integration-band {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+}
+
+.step-row {
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.06);
+}
+
+html.dark .landing-page .step-row {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.step-index,
+.plan-badge {
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+html.dark .landing-page .step-index,
+html.dark .landing-page .plan-badge {
+  color: #f5d0fe;
+  background: rgba(217, 70, 239, 0.15);
+}
+
+.pricing-card {
+  padding: 1.5rem;
+}
+
+.pricing-card-featured {
+  border-color: #ddd6fe;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 245, 255, 0.88)),
+    rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 24px 76px rgba(139, 92, 246, 0.16),
+    0 0 0 1px rgba(217, 70, 239, 0.08);
+}
+
+html.dark .landing-page .pricing-card-featured {
+  border-color: rgba(217, 70, 239, 0.36);
+  box-shadow: 0 0 42px rgba(217, 70, 239, 0.18);
+}
+
+.plan-button {
+  color: white;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.22);
+}
+
+.plan-button:hover {
+  box-shadow: 0 16px 42px rgba(217, 70, 239, 0.26);
+}
+
+html.dark .landing-page .plan-button {
+  color: #0b0b0f;
+  background: white;
+  box-shadow: none;
+}
+
+html.dark .landing-page .plan-button:hover {
+  background: #fae8ff;
+}
+
+.faq-item {
+  border-radius: 1.25rem;
+  padding: 1rem 1.125rem;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  color: #111827;
+  font-weight: 800;
+  list-style: none;
+}
+
+html.dark .landing-page .faq-item summary {
+  color: white;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  float: right;
+  color: #d946ef;
+}
+
+.faq-item[open] summary::after {
+  content: '-';
+}
+
+.faq-item p {
+  margin-top: 0.75rem;
+  color: #64748b;
+  font-size: 0.925rem;
+  line-height: 1.75;
+}
+
+html.dark .landing-page .faq-item p {
+  color: rgb(148 163 184);
+}
+
+.faq-section,
+.landing-footer {
+  border-top: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+html.dark .landing-page .faq-section,
+html.dark .landing-page .landing-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.footer-text,
+.footer-link {
+  color: #64748b;
+}
+
+.footer-link:hover {
+  color: #111827;
+}
+
+html.dark .landing-page .footer-text,
+html.dark .landing-page .footer-link {
+  color: #64748b;
+}
+
+html.dark .landing-page .footer-link:hover {
+  color: white;
+}
+
+.scan-line {
+  animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(0);
     opacity: 0;
-    transform: translateY(5px);
+  }
+  10%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes route-pulse {
+  from {
+    transform: translateX(-100%);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: translateX(100%);
   }
 }
 
-.code-prompt {
-  color: #22c55e;
-  font-weight: bold;
-}
-.code-cmd {
-  color: #38bdf8;
-}
-.code-flag {
-  color: #a78bfa;
-}
-.code-url {
-  color: #14b8a6;
-}
-.code-comment {
-  color: #64748b;
-  font-style: italic;
-}
-.code-success {
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.15);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-.code-response {
-  color: #fbbf24;
-}
-
-/* Blinking Cursor */
-.cursor {
-  display: inline-block;
-  width: 8px;
-  height: 16px;
-  background: #22c55e;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  0%,
-  50% {
-    opacity: 1;
+@media (max-width: 640px) {
+  .api-route-map {
+    grid-template-columns: 1fr;
   }
-  51%,
-  100% {
-    opacity: 0;
+
+  .route-line {
+    height: 2rem;
+    width: 2px;
+    justify-self: center;
+    background: linear-gradient(180deg, transparent, rgba(217, 70, 239, 0.9), transparent);
+  }
+
+  .api-activity {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-row + .activity-row {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .landing-page .activity-row + .activity-row {
+    border-top-color: #e5e7eb;
   }
 }
 
-/* Dark mode adjustments */
-:deep(.dark) .terminal-window {
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(20, 184, 166, 0.2),
-    0 0 40px rgba(20, 184, 166, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+@media (prefers-reduced-motion: reduce) {
+  .scan-line,
+  .route-line::after {
+    animation: none;
+  }
+
+  .landing-primary-button,
+  .landing-secondary-button {
+    transition: none;
+  }
 }
 </style>
